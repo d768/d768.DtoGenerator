@@ -5,12 +5,12 @@ namespace d768.DtoGenerator.Core.Emission
     public class SourcePage
     {
         private readonly bool _assumeAllObjectsAreStrings;
-        public EmittedType Type { get; }
+        public EmittedTypeDefinition TypeDefinition { get; }
 
-        public SourcePage(EmittedType type, bool assumeAllObjectsAreStrings = true)
+        public SourcePage(EmittedTypeDefinition typeDefinition, bool assumeAllObjectsAreStrings = true)
         {
             _assumeAllObjectsAreStrings = assumeAllObjectsAreStrings;
-            Type = type;
+            TypeDefinition = typeDefinition;
         }
 
         public override string ToString()
@@ -18,10 +18,10 @@ namespace d768.DtoGenerator.Core.Emission
             var builder = new StringBuilder();
             builder.AppendLine("using System;");
             builder.AppendLine();
-            builder.AppendLine($"public class {Type.Name}");
+            builder.AppendLine($"public class {TypeDefinition.Name}");
             builder.AppendLine("{");
 
-            foreach (var property in Type.Properties)
+            foreach (var property in TypeDefinition.Properties)
             {
                 var name = property
                                .Name

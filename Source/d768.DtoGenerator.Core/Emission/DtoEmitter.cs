@@ -27,10 +27,10 @@ namespace d768.DtoGenerator.Core.Emission
             _typesEmitter = typesEmitter;
         }
 
-        private Either<EmissionError, IEnumerable<EmittedType>> EmitInternal(
+        private Either<EmissionError, IEnumerable<EmittedTypeDefinition>> EmitInternal(
             IEnumerable<TypeDefinition> controllers)
         {
-            var emittedTypesList = new List<EmittedType>();
+            var emittedTypesList = new List<EmittedTypeDefinition>();
 
             foreach (var controller in controllers)
             {
@@ -71,21 +71,21 @@ namespace d768.DtoGenerator.Core.Emission
             return emittedTypesList;
         }
 
-        private Try<EmittedType> Emit(GenericInstanceType declaringType, string methodName,
+        private Try<EmittedTypeDefinition> Emit(GenericInstanceType declaringType, string methodName,
             string className)
-            => new Try<EmittedType>(() =>
+            => new Try<EmittedTypeDefinition>(() =>
             {
                 var emittedClassName = methodName + "Dto";
                 var builder = new StringBuilder();
 
                 builder.AppendLine("}");
-                return new EmittedType(
+                return new EmittedTypeDefinition(
                     emittedClassName,
                     className,
                     declaringType);
             });
 
-        public Task<Either<EmissionError, IEnumerable<EmittedType>>> EmitAsync()
+        public Task<Either<EmissionError, IEnumerable<EmittedTypeDefinition>>> EmitAsync()
             => Task.FromResult(
                 _typesEmitter.GetControllerTypes()
                     .Bind(EmitInternal));

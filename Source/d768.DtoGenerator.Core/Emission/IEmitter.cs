@@ -7,6 +7,6 @@ namespace d768.DtoGenerator.Core.Emission
 {
     public interface IEmitter
     {
-        Task<Either<EmissionError, IEnumerable<EmittedType>>> EmitAsync();
+        Task<Either<EmissionError, IEnumerable<EmittedTypeDefinition>>> EmitAsync();
     }
 }
