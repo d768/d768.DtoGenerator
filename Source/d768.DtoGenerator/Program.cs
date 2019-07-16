@@ -44,11 +44,9 @@ namespace d768.DtoGenerator
                         x => { Console.WriteLine(x); }),
                     error => Console.WriteLine(error.ErrorMessage));
             
-//            either
-//                .Match(
-//                    sources => sources.ForEach(
-//                        x => { Console.WriteLine(x); }),
-//                    error => Console.WriteLine(error.ErrorMessage));
+
+            newModule
+            
         
             Console.ReadLine();
         }
