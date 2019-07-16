@@ -1,25 +1,40 @@
+using System.Collections.Generic;
+using System.Linq;
 using Mono.Cecil;
 
 namespace d768.DtoGenerator.Core.Emission
 {
+    public class EmittedTypeProperty
+    {
+        public string Name { get; }
+        public TypeDefinition Type { get; }
+
+        public EmittedTypeProperty(string name, TypeDefinition type)
+        {
+            Name = name;
+            Type = type;
+        }
+    }
+    
     public class EmittedType
     {
         public string Name { get; }
-        public string SourceCode { get; }
-
         public string ParentType { get; }
+        public IReadOnlyCollection<EmittedTypeProperty> Properties { get; }
 
-        public TypeDefinition TypeDefinition { get; }
-
-        public EmittedType(string name, 
-        string sourceCode, 
+        public EmittedType(string name,
         string parentType,
-            TypeDefinition typeDefinition)
+        GenericInstanceType type)
         {
             Name = name;
-            SourceCode = sourceCode;
             ParentType = parentType;
-            TypeDefinition = typeDefinition;
+
+            var typeDef = type.Resolve();
+            Properties = typeDef
+                .Properties
+                .Zip(type.GenericArguments)
+                .Select(x => new EmittedTypeProperty(x.Item1.Name, x.Item2.Resolve()))
+                .ToArray();
         }
     }
 }
