@@ -17,37 +17,25 @@ namespace d768.DtoGenerator
         {
             var typesEmitter =
                 new DllControllerTypeEmitter(@"C:\Projects\mobileapi\MobileApi\bin\MobileApi.dll");
-        
-            var either = await new DtoEmitter(
-                    new DtoEmitterOptions(){AssumeAllObjectsAreStrings = true}, typesEmitter)
-                .EmitAsync()
-                .MapAsync(x => x.Select(y => new SourcePage(y, true)))
-                .MapAsync(x => x.Select(y => y.ToString()));
 
-            var newAssemblyBuilder 
+            var newAssemblyBuilder
                 = AssemblyBuilder.DefineDynamicAssembly(
-                    new AssemblyName("TempAssembly"), 
+                    new AssemblyName("TempAssembly"),
                     AssemblyBuilderAccess.RunAndCollect);
 
             var newModule = newAssemblyBuilder.DefineDynamicModule("TempModule");
-            
-            var either1 = await new DtoEmitter(
-                    new DtoEmitterOptions() {AssumeAllObjectsAreStrings = true}, typesEmitter)
-                .EmitAsync()
-                .MapAsync(x => x
-                    .Select(y => new EmittedType(y, newModule)))
-                .BindAsync(x => x.Select(y => y.CreateType()).Sequence());
-            
-            either1
+
+            (await new DtoDefinitionEmitter(
+                        new DtoEmitterOptions() {AssumeAllObjectsAreStrings = true}, typesEmitter)
+                    .EmitAsync()
+                    .MapAsync(x => x
+                        .Select(y => new EmittedType(y, newModule)))
+                    .BindAsync(x => x.Select(y => y.CreateType()).Sequence()))
                 .Match(
                     sources => sources.ForEach(
                         x => { Console.WriteLine(x); }),
                     error => Console.WriteLine(error.ErrorMessage));
-            
 
-            newModule
-            
-        
             Console.ReadLine();
         }
     }

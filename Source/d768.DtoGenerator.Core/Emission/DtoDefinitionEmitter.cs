@@ -15,13 +15,13 @@ namespace d768.DtoGenerator.Core.Emission
     {
         public bool AssumeAllObjectsAreStrings { get; set; }
     }
-    
-    public class DtoEmitter : IEmitter
+
+    public class DtoDefinitionEmitter : IEmitter
     {
         private readonly DtoEmitterOptions _options;
         private IControllerTypesEmitter _typesEmitter;
 
-        public DtoEmitter(DtoEmitterOptions options, IControllerTypesEmitter typesEmitter)
+        public DtoDefinitionEmitter(DtoEmitterOptions options, IControllerTypesEmitter typesEmitter)
         {
             _options = options;
             _typesEmitter = typesEmitter;
@@ -40,30 +40,24 @@ namespace d768.DtoGenerator.Core.Emission
 
                 foreach (var methodDefinition in dynamicMethods)
                 {
-                    var anonymousTypes = methodDefinition
-                        .Body
-                        .Instructions
-                        .Where(x => x.OpCode == OpCodes.Newobj && x.Operand is MethodReference)
-                        .Select(x => x.Operand as MethodReference)
-                        .Where(x => x.DeclaringType.Name.Contains("AnonymousType")
-                                    && x.DeclaringType is GenericInstanceType)
-                        .Select(x => x.DeclaringType)
-                        .Cast<GenericInstanceType>()
-                        .ToArray();
+                    var returnType = GetReturnType(methodDefinition);
 
-                    foreach (var anonymousType in anonymousTypes)
+                    if (returnType.IsSome)
                     {
-                        var emitionResult =
-                            Emit(anonymousType, methodDefinition.Name, controller.Name).Try();
+                        var emissionResult =
+                            Emit(
+                                (GenericInstanceType) returnType, 
+                                controller.Name+methodDefinition.Name)
+                                .Try();
 
-                        if (emitionResult.IsFaulted)
+                        if (emissionResult.IsFaulted)
                             return new EmissionError(
-                                emitionResult
+                                emissionResult
                                     .Match(
                                         _ => (Exception) null,
                                         ex => ex));
 
-                        emitionResult.IfSucc(e => emittedTypesList.Add(e));
+                        emissionResult.IfSucc(e => emittedTypesList.Add(e));
                     }
                 }
             }
@@ -71,19 +65,25 @@ namespace d768.DtoGenerator.Core.Emission
             return emittedTypesList;
         }
 
-        private Try<EmittedTypeDefinition> Emit(GenericInstanceType declaringType, string methodName,
-            string className)
-            => new Try<EmittedTypeDefinition>(() =>
-            {
-                var emittedClassName = methodName + "Dto";
-                var builder = new StringBuilder();
+        private Option<GenericInstanceType> GetReturnType(MethodDefinition methodDefinition)
+            => new Try<GenericInstanceType>(() => methodDefinition
+                    .Body
+                    .Instructions
+                    .Where(x => x.OpCode == OpCodes.Callvirt
+                                && x.Operand is GenericInstanceMethod genericInstanceMethod
+                                && genericInstanceMethod.FullName.Contains(
+                                    "OkNegotiatedContentResult"))
+                    .Select(x => x.Operand as GenericInstanceMethod)
+                    .First()
+                    .GenericArguments
+                    .First() as GenericInstanceType)
+                .ToOption();
 
-                builder.AppendLine("}");
-                return new EmittedTypeDefinition(
-                    emittedClassName,
-                    className,
-                    declaringType);
-            });
+        private Try<EmittedTypeDefinition> Emit(GenericInstanceType declaringType,
+            string typeName)
+            => () => new EmittedTypeDefinition(
+                typeName + "Dto",
+                declaringType);
 
         public Task<Either<EmissionError, IEnumerable<EmittedTypeDefinition>>> EmitAsync()
             => Task.FromResult(
