@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "d768.DtoGenerator", "d768.DtoGenerator\d768.DtoGenerator.csproj", "{90AC96EB-BAA0-4FE9-A4E4-35A911BD85EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "d768.DtoGenerator.Core", "d768.DtoGenerator.Core\d768.DtoGenerator.Core.csproj", "{C3239247-8110-4C97-B93D-57375942D63B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90AC96EB-BAA0-4FE9-A4E4-35A911BD85EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90AC96EB-BAA0-4FE9-A4E4-35A911BD85EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90AC96EB-BAA0-4FE9-A4E4-35A911BD85EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90AC96EB-BAA0-4FE9-A4E4-35A911BD85EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3239247-8110-4C97-B93D-57375942D63B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3239247-8110-4C97-B93D-57375942D63B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3239247-8110-4C97-B93D-57375942D63B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3239247-8110-4C97-B93D-57375942D63B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
